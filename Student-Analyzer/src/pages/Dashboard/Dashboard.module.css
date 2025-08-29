@@ -33,20 +33,50 @@ body {
   background-color: var(--light-color);
   display: flex;
   overflow: hidden;
+  position: relative;
 }
 
-/* --- MODIFIED: Sidebar Styles for YouTube-like behavior --- */
+.modalOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  z-index: 99;
+}
+
+/* --- Sidebar Styles --- */
 .sidebar {
   height: 100%;
-  width: 220px; /* Default expanded width */
+  width: 220px;
   background-color: var(--dark-color);
   display: flex;
   flex-direction: column;
   align-items: center;
   padding: 20px 0;
-  transition: width 0.3s ease; /* Smooth transition for width change */
+  transition: width 0.3s ease;
   position: relative;
   z-index: 10;
+}
+
+.menuButton {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+  border-radius: var(--border-radius);
+  transition: background-color 0.2s ease;
+  margin-bottom: 20px;
+}
+
+.menuButton:hover {
+  background-color: rgba(255, 255, 255, 0.1);
 }
 
 .menuItem {
@@ -54,8 +84,8 @@ body {
   height: 60px;
   display: flex;
   align-items: center;
-  justify-content: flex-start; /* Default for expanded view */
-  padding-left: 25px; /* Default for expanded view */
+  justify-content: flex-start;
+  padding-left: 25px;
   color: white;
   cursor: pointer;
   margin: 5px 0;
@@ -65,27 +95,11 @@ body {
 }
 
 .tooltip {
-  display: inline; /* Visible by default */
-  margin-left: 15px; /* Space between icon and text */
+  display: inline;
+  margin-left: 15px;
   font-size: 14px;
   white-space: nowrap;
 }
-
-/* --- New styles for the collapsed state --- */
-.sidebar.collapsed {
-  width: 80px; /* Collapsed width */
-}
-
-.sidebar.collapsed .menuItem {
-  justify-content: center; /* Center icon when collapsed */
-  padding-left: 0;
-}
-
-.sidebar.collapsed .tooltip {
-  display: none; /* Hide text when collapsed */
-}
-
-/* --- REMOVED: All .sidebar:hover rules are gone --- */
 
 .menuItem:hover {
   background-color: rgba(255, 255, 255, 0.1);
@@ -95,14 +109,29 @@ body {
   background-color: var(--primary-color);
 }
 
+/* Collapsed Sidebar State */
+.sidebar.collapsed {
+  width: 80px;
+}
 
-/* Main Content Styles */
+.sidebar.collapsed .menuItem {
+  justify-content: center;
+  padding-left: 0;
+}
+
+.sidebar.collapsed .tooltip {
+  display: none;
+}
+
+/* --- Main Content Area --- */
 .content {
   display: flex;
   flex-direction: column;
   height: 100%;
   width: 100%;
   overflow: auto;
+  position: relative;
+  z-index: 1;
 }
 
 .header {
@@ -116,32 +145,6 @@ body {
   top: 0;
   z-index: 5;
 }
-
-/* --- New Styles for Header Layout --- */
-/* .headerLeft {
-  display: flex;
-  align-items: center;
-  gap: 15px;
-} */
-
-.menuButton {
-  background: none;
-  border: none;
-  cursor: pointer;
-  color: white; /* Changed from --dark-color */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 8px; /* Slightly increased padding */
-  border-radius: var(--border-radius);
-  transition: background-color 0.2s ease;
-  margin-bottom: 20px; /* Added margin to push items down */
-}
-
-.menuButton:hover {
-  background-color: rgba(255, 255, 255, 0.1); /* Changed hover to match other sidebar items */
-}
-
 
 .searchBox {
   display: flex;
@@ -228,7 +231,7 @@ body {
   transform: scale(1.1);
 }
 
-/* Subcontent Layout */
+/* --- Subcontent Layout --- */
 .subcontent {
   display: flex;
   flex: 1;
@@ -252,7 +255,26 @@ body {
   gap: 20px;
 }
 
-/* Welcome Section */
+/* --- Page Content for Other Tabs --- */
+.pageContent {
+  padding: 40px;
+  background-color: #f5f7fa;
+  flex: 1;
+  color: var(--dark-color);
+}
+
+.pageContent h1 {
+  font-size: 28px;
+  margin-bottom: 10px;
+}
+
+.pageContent p {
+  font-size: 16px;
+  color: var(--gray-color);
+}
+
+
+/* --- Dashboard Components & Cards --- */
 .welcome {
   background-color: white;
   border-radius: var(--border-radius);
@@ -277,7 +299,6 @@ body {
   gap: 12px;
 }
 
-/* Button Styles */
 .btnPrimary {
   padding: 10px 18px;
   background-color: var(--primary-color);
@@ -314,7 +335,6 @@ body {
   background-color: rgba(67, 97, 238, 0.1);
 }
 
-/* Stats Overview */
 .statsOverview {
   background-color: white;
   border-radius: var(--border-radius);
@@ -375,7 +395,6 @@ body {
   color: var(--dark-color);
 }
 
-/* Performance Chart */
 .performanceChart {
   background-color: white;
   border-radius: var(--border-radius);
@@ -577,15 +596,63 @@ body {
   border-bottom: none;
 }
 
-.taskItem input[type="checkbox"] {
-  accent-color: var(--primary-color);
+/* --- Corrected: Custom Checkbox Styles --- */
+.checkbox {
+  position: relative;
+  width: 20px;
+  height: 20px;
 }
 
-.taskItem label {
+.checkbox input[type="checkbox"] {
+  opacity: 0;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+}
+
+.checkbox label {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 20px;
+  height: 20px;
+  background-color: white;
+  border: 2px solid var(--light-gray);
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  pointer-events: none;
+}
+
+.checkIcon {
+  color: white;
+  opacity: 0;
+  transform: scale(0.5);
+  transition: all 0.2s ease;
+}
+
+.checkbox input[type="checkbox"]:checked + label {
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+}
+
+.checkbox input[type="checkbox"]:checked + label .checkIcon {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.taskLabel {
   flex: 1;
   font-size: 14px;
   color: var(--dark-color);
   cursor: pointer;
+}
+
+.checkbox input[type="checkbox"]:checked ~ .taskLabel {
+  text-decoration: line-through;
+  color: var(--gray-color);
 }
 
 .taskDue {
@@ -614,7 +681,109 @@ body {
   background-color: rgba(67, 97, 238, 0.1);
 }
 
-/* Responsive Adjustments */
+/* --- Modal Styles --- */
+.modalBackdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: transparent;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modalContent {
+  background: #ffffff;
+  padding: 24px;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 450px;
+  animation: slide-up 0.3s ease-out;
+  z-index: 1001;
+}
+
+@keyframes slide-up {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.modalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #e0e0e0;
+  padding-bottom: 16px;
+}
+
+.modalHeader h2 {
+  margin: 0;
+  font-size: 1.25rem;
+  color: #333;
+}
+
+.closeButton {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #888;
+  padding: 4px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.closeButton:hover {
+  background-color: #f0f0f0;
+  color: #333;
+}
+
+.modalBody .formGroup {
+  margin-bottom: 20px;
+}
+
+.modalBody label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: #555;
+}
+
+.modalInput {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.modalInput:focus {
+  outline: none;
+  border-color: #4a90e2;
+  box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.2);
+}
+
+.modalActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+/* --- Responsive Adjustments --- */
 @media (max-width: 1200px) {
   .subcontent {
     flex-direction: column;
@@ -622,51 +791,283 @@ body {
   
   .leftBox, .rightBox {
     width: 100%;
+    flex: none;
   }
 }
 
 @media (max-width: 768px) {
-  /* No change needed for sidebar, it's already compact */
-  
   .header {
     padding: 15px;
     gap: 10px;
-    flex-wrap: wrap; /* Allow header items to wrap on small screens */
+    flex-wrap: wrap;
   }
 
-  .headerLeft {
-    flex-grow: 1; /* Allow left side to take available space */
-  }
-  
   .searchBox {
-    width: 100%; /* Make search box take full width on small screens */
-    min-width: 150px;
+    width: 100%;
+    order: 3;
+    margin-top: 10px;
   }
   
   .statsGrid {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr;
   }
 }
+/* Students Section Styles */
+.sectionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
 
+.refreshButton {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  font-size: 14px;
+  transition: var(--transition);
+}
 
-/* src/Dashboard/Dashboard.module.css */
+.refreshButton:hover {
+  background-color: var(--secondary-color);
+}
 
-/* ... (add this at the end of the file) ... */
+.refreshButton:disabled {
+  background-color: var(--gray-color);
+  cursor: not-allowed;
+}
 
-/* --- NEW: Styling for the placeholder page content --- */
-.pageContent {
-  padding: 40px;
-  background-color: #f5f7fa;
+.studentsContainer {
+  background-color: white;
+  border-radius: var(--border-radius);
+  padding: 24px;
+  box-shadow: var(--box-shadow);
+}
+
+.controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  gap: 16px;
+}
+
+.searchBox {
+  display: flex;
+  align-items: center;
+  background-color: var(--light-gray);
+  padding: 10px 15px;
+  border-radius: var(--border-radius);
   flex: 1;
+  max-width: 400px;
+}
+
+.searchInput {
+  border: none;
+  background: transparent;
+  outline: none;
+  width: 100%;
+  font-size: 14px;
   color: var(--dark-color);
 }
 
-.pageContent h1 {
-  font-size: 28px;
-  margin-bottom: 10px;
+.stats {
+  display: flex;
+  align-items: center;
 }
 
-.pageContent p {
-  font-size: 16px;
+.statBadge {
+  background-color: var(--primary-light);
+  color: white;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.loadingState, .errorState, .emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  text-align: center;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid var(--light-gray);
+  border-top: 4px solid var(--primary-color);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 16px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.errorIcon, .emptyIcon {
   color: var(--gray-color);
+  margin-bottom: 16px;
+}
+
+.errorState h3, .emptyState h3 {
+  color: var(--dark-color);
+  margin-bottom: 8px;
+}
+
+.errorState p, .emptyState p {
+  color: var(--gray-color);
+  margin-bottom: 16px;
+}
+
+.clearSearchButton {
+  padding: 8px 16px;
+  background-color: transparent;
+  color: var(--primary-color);
+  border: 1px solid var(--primary-color);
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  font-weight: 500;
+  transition: var(--transition);
+}
+
+.clearSearchButton:hover {
+  background-color: rgba(67, 97, 238, 0.1);
+}
+
+.studentsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.studentCard {
+  display: flex;
+  background-color: white;
+  border-radius: var(--border-radius);
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  transition: var(--transition);
+  border: 1px solid var(--light-gray);
+}
+
+.studentCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+.studentAvatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background-color: var(--primary-color);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  font-weight: bold;
+  margin-right: 16px;
+  flex-shrink: 0;
+}
+
+.studentInfo {
+  flex: 1;
+}
+
+.studentName {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--dark-color);
+  margin-bottom: 4px;
+}
+
+.studentId, .studentEmail {
+  font-size: 13px;
+  color: var(--gray-color);
+  margin-bottom: 4px;
+}
+
+.studentGrade {
+  display: inline-block;
+  background-color: var(--light-gray);
+  color: var(--dark-color);
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  margin-top: 8px;
+}
+
+.studentActions {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 8px;
+}
+
+.actionButton {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1px solid var(--light-gray);
+  background-color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.actionButton:hover {
+  background-color: var(--primary-color);
+  color: white;
+  border-color: var(--primary-color);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .sectionHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+  
+  .controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .searchBox {
+    max-width: none;
+  }
+  
+  .studentsGrid {
+    grid-template-columns: 1fr;
+  }
+  
+  .studentCard {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .studentAvatar {
+    margin-right: 0;
+    margin-bottom: 16px;
+    align-self: center;
+  }
+  
+  .studentActions {
+    flex-direction: row;
+    margin-top: 16px;
+  }
 }
