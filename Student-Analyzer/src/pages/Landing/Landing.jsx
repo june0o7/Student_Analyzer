@@ -5,7 +5,8 @@ import styles from './Landing.module.css';
 import student from '../icons_logos/lstudent.json';
 import teacher from '../icons_logos/teacher.json';
 import Lottie from 'lottie-react';
-
+import sa_black from '../icons_logos/sa_black.png';
+import sa_white from '../icons_logos/sa_white.png';
 const Landing = () => {
   const [displayText, setDisplayText] = useState('');
   const [isDeleting, setIsDeleting] = useState(false);
@@ -19,9 +20,10 @@ const Landing = () => {
 
   const phrases = [
     "Welcome to EduTrack",
-    "Student Performance Analytics",
-    "Teacher Management Portal",
-    "Data-Driven Education"
+    "Student Analytics",
+    "Teacher Portal",
+    "Data-Driven Education",
+    "Explore the Universe"
   ];
 
   useEffect(() => {
@@ -61,7 +63,10 @@ const Landing = () => {
       <div className={styles.content}>
         {/* Welcome Section */}
         <div className={styles.welcomeSection}>
-          <div className={styles.logo}>EduTrack</div>
+          
+<div className={styles.logo}>
+ <img src={sa_white} alt="Student Analyzer Logo" />
+</div>
           <h1 className={styles.typewriter}>
             <span className={styles.typewriterText}>{displayText}</span>
             <span className={styles.cursor}>|</span>

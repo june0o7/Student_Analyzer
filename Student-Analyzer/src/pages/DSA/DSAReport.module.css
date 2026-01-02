@@ -1,0 +1,223 @@
+:root {
+  --primary-blue: #4361ee;
+  --light-bg: #f8f9fa;
+  --content-bg: #ffffff;
+  --text-dark: #2c3e50;
+  --text-muted: #6c757d;
+  --border-color: #e9ecef;
+  --success: #28a745;
+  --danger: #dc3545;
+  --warning: #ffc107;
+  --info: #17a2b8;
+  --shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  --border-radius: 12px;
+  --transition: all 0.3s ease;
+}
+
+.reportContainer {
+  background-color: var(--light-bg);
+  padding: 2rem;
+  min-height: 100vh;
+}
+
+.reportContent {
+  max-width: 800px;
+  margin: 0 auto;
+  position: relative;
+  background-color: var(--content-bg);
+  border-radius: var(--border-radius);
+  padding: 2rem;
+  box-shadow: var(--shadow);
+}
+
+.backButton {
+  position: absolute;
+  top: 1.5rem;
+  left: 1.5rem;
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 50%;
+  transition: var(--transition);
+}
+
+.backButton:hover {
+  background-color: var(--light-bg);
+  color: var(--text-dark);
+}
+
+.reportHeader {
+  text-align: center;
+  margin-bottom: 2rem;
+  margin-top: 2rem;
+}
+
+.reportHeader h1 {
+  color: var(--text-dark);
+  margin-bottom: 0.5rem;
+}
+
+.reportHeader p {
+  color: var(--text-muted);
+}
+
+.scoreSection {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.scoreCircle {
+  width: 200px;
+  height: 200px;
+  border: 8px solid;
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1.5rem;
+  position: relative;
+}
+
+.scoreIcon {
+  font-size: 3rem;
+  margin-bottom: 0.5rem;
+}
+
+.scoreValue {
+  font-size: 2.5rem;
+  font-weight: bold;
+}
+
+.scoreLabel {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+.performanceMessage {
+  font-size: 1.2rem;
+  font-weight: 500;
+}
+
+.detailedResults {
+  margin-bottom: 2rem;
+}
+
+.detailedResults h2 {
+  margin-bottom: 1.5rem;
+  color: var(--text-dark);
+}
+
+.resultCard {
+  background-color: var(--light-bg);
+  padding: 1.5rem;
+  border-radius: var(--border-radius);
+  margin-bottom: 1.5rem;
+}
+
+.resultCard h3 {
+  margin-bottom: 1rem;
+  color: var(--text-dark);
+}
+
+.progressBar {
+  width: 100%;
+  height: 8px;
+  background-color: var(--border-color);
+  border-radius: 4px;
+  margin-bottom: 1rem;
+  overflow: hidden;
+}
+
+.progressFill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.5s ease;
+}
+
+.sectionScore {
+  font-weight: 500;
+  margin-bottom: 1rem;
+}
+
+.questionAnalysis, .problemAnalysis {
+  display: flex;
+  gap: 2rem;
+}
+
+.correctAnswers, .incorrectAnswers, .solvedProblems, .unsolvedProblems {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.correctIcon {
+  color: var(--success);
+}
+
+.incorrectIcon {
+  color: var(--danger);
+}
+
+.recommendations {
+  margin-bottom: 2rem;
+}
+
+.recommendations h2 {
+  margin-bottom: 1rem;
+  color: var(--text-dark);
+}
+
+.recommendations ul {
+  padding-left: 1.5rem;
+}
+
+.recommendations li {
+  margin-bottom: 0.5rem;
+  color: var(--text-muted);
+}
+
+.actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+}
+
+.retryButton, .practiceButton {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.retryButton {
+  background-color: var(--light-bg);
+  color: var(--text-dark);
+}
+
+.practiceButton {
+  background-color: var(--primary-blue);
+  color: white;
+}
+
+.retryButton:hover {
+  background-color: var(--border-color);
+}
+
+.practiceButton:hover {
+  opacity: 0.9;
+}
+
+@media (max-width: 768px) {
+  .questionAnalysis, .problemAnalysis {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .actions {
+    flex-direction: column;
+  }
+}

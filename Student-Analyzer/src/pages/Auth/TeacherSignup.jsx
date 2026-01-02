@@ -122,6 +122,7 @@ const handleSubmit = async (e) => {
       teacherId: formData.teacherId,
       createdAt: new Date(),
       role: "teachers",
+      sids: [],
     });
 
     navigate('/teacher-login');

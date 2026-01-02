@@ -1,4 +1,4 @@
-import { useState , useEffect} from "react";
+import { useState, useEffect } from "react";
 import {
   FiHome,
   FiUsers,
@@ -15,17 +15,17 @@ import {
   FiCalendar,
   FiChevronDown,
   FiMenu,
-} from "react-icons/fi";
-import {
-  // ... your existing imports
   FiRefreshCw,
   FiAlertCircle,
-  // ... keep your other imports
+  FiX,
+  FiEdit3,
+  FiSave,
+  FiAward
 } from "react-icons/fi";
 import style from "../Dashboard/Dashboard.module.css";
 import AddStudentModal from "./AddStudentModal.jsx";
 import { getAuth } from "firebase/auth";
-import { doc, getDoc, getDocs, collection } from "firebase/firestore";
+import { doc, getDoc, getDocs, collection, updateDoc } from "firebase/firestore";
 import {
   app,
   analytics,
@@ -33,6 +33,349 @@ import {
   db,
   storage,
 } from "../../Firebase_Config/firebaseConfig";
+import { useNavigate } from "react-router-dom";
+
+// Student Profile Modal Component
+const StudentProfileModal = ({ student, isOpen, onClose, onSave }) => {
+  const [dsaPoints, setDsaPoints] = useState(student?.dsaPoints || "");
+  const [daaPoints, setDaaPoints] = useState(student?.daaPoints || "");
+  const [isEditingDsa, setIsEditingDsa] = useState(false);
+  const [isEditingDaa, setIsEditingDaa] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (student) {
+      setDsaPoints(student.dsaPoints || "");
+      setDaaPoints(student.daaPoints || "");
+    }
+  }, [student]);
+
+  if (!isOpen || !student) return null;
+
+  const handleSaveDsa = async () => {
+    if (!dsaPoints || isNaN(dsaPoints) || dsaPoints < 0 || dsaPoints > 100) {
+      alert("Please enter a valid DSA score between 0 and 100");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      await onSave(student.id, 'dsa', parseInt(dsaPoints));
+      setIsEditingDsa(false);
+    } catch (error) {
+      console.error("Error saving DSA points:", error);
+      alert("Failed to save DSA points. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSaveDaa = async () => {
+    if (!daaPoints || isNaN(daaPoints) || daaPoints < 0 || daaPoints > 100) {
+      alert("Please enter a valid DAA score between 0 and 100");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      await onSave(student.id, 'daa', parseInt(daaPoints));
+      setIsEditingDaa(false);
+    } catch (error) {
+      console.error("Error saving DAA points:", error);
+      alert("Failed to save DAA points. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleClose = () => {
+    setIsEditingDsa(false);
+    setIsEditingDaa(false);
+    setDsaPoints(student.dsaPoints || "");
+    setDaaPoints(student.daaPoints || "");
+    onClose();
+  };
+
+  const getScoreStatus = (score) => {
+    if (!score && score !== 0) return null;
+    if (score >= 80) return { text: 'Excellent', color: '#28a745' };
+    if (score >= 60) return { text: 'Good', color: '#17a2b8' };
+    if (score >= 40) return { text: 'Average', color: '#ffc107' };
+    return { text: 'Needs Improvement', color: '#dc3545' };
+  };
+
+  const dsaStatus = getScoreStatus(student.dsaPoints);
+  const daaStatus = getScoreStatus(student.daaPoints);
+
+  return (
+    <div className={style.modalOverlay} onClick={handleClose}>
+      <div className={style.studentModalContent} onClick={(e) => e.stopPropagation()}>
+        <div className={style.modalHeader}>
+          <h2>Student Profile</h2>
+          <button className={style.closeButton} onClick={handleClose}>
+            <FiX size={20} />
+          </button>
+        </div>
+
+        <div className={style.modalBody}>
+          {/* Student Basic Info */}
+          <div className={style.studentBasicInfo}>
+            <div className={style.studentAvatarLarge}>
+              {student.name ? student.name.charAt(0).toUpperCase() : 'S'}
+            </div>
+            <div className={style.studentBasicDetails}>
+              <h3>{student.name || 'Unknown Student'}</h3>
+              <p>ID: {student.studentId}</p>
+              <p>{student.email}</p>
+              {student.class && <p>Class: {student.class}</p>}
+            </div>
+          </div>
+
+          {/* Personal Information */}
+          <div className={style.infoSection}>
+            <h4>Personal Information</h4>
+            <div className={style.infoGrid}>
+              <div className={style.infoItem}>
+                <label>Date of Birth:</label>
+                <span>{student.dateOfBirth || 'Not provided'}</span>
+              </div>
+              <div className={style.infoItem}>
+                <label>Phone:</label>
+                <span>{student.phone || 'Not provided'}</span>
+              </div>
+              <div className={style.infoItem}>
+                <label>Address:</label>
+                <span>{student.address || 'Not provided'}</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Parent/Guardian Information */}
+          <div className={style.infoSection}>
+            <h4>Parent/Guardian Information</h4>
+            <div className={style.infoGrid}>
+              <div className={style.infoItem}>
+                <label>Parent Name:</label>
+                <span>{student.parentName || 'Not provided'}</span>
+              </div>
+              <div className={style.infoItem}>
+                <label>Parent Email:</label>
+                <span>{student.parentEmail || 'Not provided'}</span>
+              </div>
+              <div className={style.infoItem}>
+                <label>Parent Phone:</label>
+                <span>{student.parentPhone || 'Not provided'}</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Academic Information */}
+          <div className={style.infoSection}>
+            <h4>Academic Information</h4>
+            {student.subjects && student.subjects.length > 0 ? (
+              <div className={style.subjectsList}>
+                {student.subjects.map((subject, index) => (
+                  <span key={index} className={style.subjectTag}>{subject}</span>
+                ))}
+              </div>
+            ) : (
+              <p>No subjects registered</p>
+            )}
+          </div>
+
+          {/* Algorithm Scores Section */}
+          <div className={style.scoresSection}>
+            <h4>Algorithm Scores</h4>
+            <div className={style.scoresGrid}>
+              {/* DSA Points Section */}
+              <div className={style.scoreCard}>
+                <div className={style.scoreHeader}>
+                  <div className={style.scoreTitle}>
+                    <FiAward className={style.scoreIcon} />
+                    <span>DSA Score</span>
+                  </div>
+                  {!isEditingDsa ? (
+                    <button 
+                      className={style.editButton}
+                      onClick={() => setIsEditingDsa(true)}
+                    >
+                      <FiEdit3 size={14} /> Edit
+                    </button>
+                  ) : (
+                    <button 
+                      className={style.cancelButton}
+                      onClick={() => {
+                        setIsEditingDsa(false);
+                        setDsaPoints(student.dsaPoints || "");
+                      }}
+                    >
+                      Cancel
+                    </button>
+                  )}
+                </div>
+                
+                {isEditingDsa ? (
+                  <div className={style.scoreEditSection}>
+                    <div className={style.inputGroup}>
+                      <label htmlFor="dsaPoints">DSA Score (0-100):</label>
+                      <input
+                        id="dsaPoints"
+                        type="number"
+                        min="0"
+                        max="100"
+                        value={dsaPoints}
+                        onChange={(e) => setDsaPoints(e.target.value)}
+                        className={style.scoreInput}
+                        placeholder="Enter DSA score"
+                      />
+                    </div>
+                    <button 
+                      className={style.saveButton}
+                      onClick={handleSaveDsa}
+                      disabled={loading}
+                    >
+                      <FiSave size={14} />
+                      {loading ? 'Saving...' : 'Save'}
+                    </button>
+                  </div>
+                ) : (
+                  <div className={style.scoreDisplay}>
+                    <div className={`${style.scoreValue} ${student.dsaPoints ? style.hasScore : ''}`}>
+                      {student.dsaPoints ? `${student.dsaPoints}/100` : 'No score recorded'}
+                    </div>
+                    {dsaStatus && (
+                      <div 
+                        className={style.scoreStatus}
+                        style={{ backgroundColor: `${dsaStatus.color}15`, color: dsaStatus.color }}
+                      >
+                        {dsaStatus.text}
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+
+              {/* DAA Points Section */}
+              <div className={style.scoreCard}>
+                <div className={style.scoreHeader}>
+                  <div className={style.scoreTitle}>
+                    <FiAward className={style.scoreIcon} />
+                    <span>DAA Score</span>
+                  </div>
+                  {!isEditingDaa ? (
+                    <button 
+                      className={style.editButton}
+                      onClick={() => setIsEditingDaa(true)}
+                    >
+                      <FiEdit3 size={14} /> Edit
+                    </button>
+                  ) : (
+                    <button 
+                      className={style.cancelButton}
+                      onClick={() => {
+                        setIsEditingDaa(false);
+                        setDaaPoints(student.daaPoints || "");
+                      }}
+                    >
+                      Cancel
+                    </button>
+                  )}
+                </div>
+                
+                {isEditingDaa ? (
+                  <div className={style.scoreEditSection}>
+                    <div className={style.inputGroup}>
+                      <label htmlFor="daaPoints">DAA Score (0-100):</label>
+                      <input
+                        id="daaPoints"
+                        type="number"
+                        min="0"
+                        max="100"
+                        value={daaPoints}
+                        onChange={(e) => setDaaPoints(e.target.value)}
+                        className={style.scoreInput}
+                        placeholder="Enter DAA score"
+                      />
+                    </div>
+                    <button 
+                      className={style.saveButton}
+                      onClick={handleSaveDaa}
+                      disabled={loading}
+                    >
+                      <FiSave size={14} />
+                      {loading ? 'Saving...' : 'Save'}
+                    </button>
+                  </div>
+                ) : (
+                  <div className={style.scoreDisplay}>
+                    <div className={`${style.scoreValue} ${student.daaPoints ? style.hasScore : ''}`}>
+                      {student.daaPoints ? `${student.daaPoints}/100` : 'No score recorded'}
+                    </div>
+                    {daaStatus && (
+                      <div 
+                        className={style.scoreStatus}
+                        style={{ backgroundColor: `${daaStatus.color}15`, color: daaStatus.color }}
+                      >
+                        {daaStatus.text}
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Overall Performance Summary */}
+          {(student.dsaPoints || student.daaPoints) && (
+            <div className={style.performanceSummary}>
+              <h4>Performance Summary</h4>
+              <div className={style.summaryGrid}>
+                {student.dsaPoints && (
+                  <div className={style.summaryItem}>
+                    <span className={style.summaryLabel}>DSA Performance:</span>
+                    <span 
+                      className={style.summaryValue}
+                      style={{ color: dsaStatus?.color }}
+                    >
+                      {dsaStatus?.text}
+                    </span>
+                  </div>
+                )}
+                {student.daaPoints && (
+                  <div className={style.summaryItem}>
+                    <span className={style.summaryLabel}>DAA Performance:</span>
+                    <span 
+                      className={style.summaryValue}
+                      style={{ color: daaStatus?.color }}
+                    >
+                      {daaStatus?.text}
+                    </span>
+                  </div>
+                )}
+                {student.dsaPoints && student.daaPoints && (
+                  <div className={style.summaryItem}>
+                    <span className={style.summaryLabel}>Average Score:</span>
+                    <span className={style.summaryValue}>
+                      {Math.round((student.dsaPoints + student.daaPoints) / 2)}/100
+                    </span>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Bio Section */}
+          {student.bio && (
+            <div className={style.infoSection}>
+              <h4>About</h4>
+              <p className={style.bioText}>{student.bio}</p>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
 
 const DashboardHome = ({
   quickStats,
@@ -183,6 +526,8 @@ const Students = () => {
   const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredStudents, setFilteredStudents] = useState([]);
+  const [selectedStudent, setSelectedStudent] = useState(null);
+  const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   
   const tid = auth.currentUser ? auth.currentUser.uid : null;
   const docRef = doc(db, "teachers", tid);
@@ -240,6 +585,56 @@ const Students = () => {
 
   const handleRefresh = () => {
     fetchStudents();
+  };
+
+  const handleViewProfile = (student) => {
+    setSelectedStudent(student);
+    setIsProfileModalOpen(true);
+  };
+
+  const handleCloseProfileModal = () => {
+    setIsProfileModalOpen(false);
+    setSelectedStudent(null);
+  };
+
+  const handleSaveScore = async (studentId, type, points) => {
+    try {
+      // Update in Firebase
+      const studentRef = doc(db, "students", studentId);
+      const updateData = {
+        [`${type}Points`]: points,
+        [`${type}ExamCompleted`]: true,
+        lastUpdated: new Date()
+      };
+
+      await updateDoc(studentRef, updateData);
+
+      // Update local state
+      setStudents(prev => prev.map(student => 
+        student.id === studentId 
+          ? { 
+              ...student, 
+              [`${type}Points`]: points, 
+              [`${type}ExamCompleted`]: true 
+            }
+          : student
+      ));
+
+      setFilteredStudents(prev => prev.map(student => 
+        student.id === studentId 
+          ? { 
+              ...student, 
+              [`${type}Points`]: points, 
+              [`${type}ExamCompleted`]: true 
+            }
+          : student
+      ));
+
+      alert(`${type.toUpperCase()} score updated successfully!`);
+    } catch (error) {
+      console.error(`Error updating ${type.toUpperCase()} points:`, error);
+      throw error;
+    }
   };
 
   if (loading) {
@@ -338,12 +733,25 @@ const Students = () => {
                   <h3 className={style.studentName}>{student.name || 'Unknown Student'}</h3>
                   <p className={style.studentId}>ID: {student.studentId}</p>
                   <p className={style.studentEmail}>{student.email}</p>
-                  {student.grade && (
-                    <span className={style.studentGrade}>Grade: {student.grade}</span>
-                  )}
+                  <div className={style.scoreBadges}>
+                    {student.dsaPoints !== undefined && (
+                      <span className={style.dsaBadge}>
+                        DSA: {student.dsaPoints}/100
+                      </span>
+                    )}
+                    {student.daaPoints !== undefined && (
+                      <span className={style.daaBadge}>
+                        DAA: {student.daaPoints}/100
+                      </span>
+                    )}
+                  </div>
                 </div>
                 <div className={style.studentActions}>
-                  <button className={style.actionButton} title="View Profile">
+                  <button 
+                    className={style.actionButton} 
+                    title="View Profile"
+                    onClick={() => handleViewProfile(student)}
+                  >
                     <FiUser size={16} />
                   </button>
                   <button className={style.actionButton} title="Send Message">
@@ -355,9 +763,18 @@ const Students = () => {
           </div>
         )}
       </div>
+
+      {/* Student Profile Modal */}
+      <StudentProfileModal
+        student={selectedStudent}
+        isOpen={isProfileModalOpen}
+        onClose={handleCloseProfileModal}
+        onSave={handleSaveScore}
+      />
     </div>
   );
 };
+
 const Analytics = () => (
   <div className={style.pageContent}>
     <h1>Student Analytics</h1>
@@ -367,20 +784,35 @@ const Analytics = () => (
     </p>
   </div>
 );
+
 const Reports = () => (
   <div className={style.pageContent}>
     <h1>Generate Reports</h1>
     <p>Create and download custom reports for attendance, grades, and more.</p>
   </div>
 );
-const Settings = () => (
-  <div className={style.pageContent}>
-    <h1>Settings</h1>
-    <p>
-      Manage your account, notification preferences, and application settings.
-    </p>
-  </div>
-);
+
+const Settings = () => {
+  // 2. Get the navigate function by calling the hook
+  const navigate = useNavigate();
+
+  return (
+    <div className={style.pageContent}>
+      <div className={style.profileSection}>
+        <h2>Settings</h2>
+        <div className={style.settingsContainer}>
+          <button
+            className={style.logoutButton}
+            // 3. Now this will work correctly ✅
+            onClick={() => auth.signOut().then(() => navigate("/"))}
+          >
+            Logout
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 function Dashboard() {
   const [activeTab, setActiveTab] = useState(0);

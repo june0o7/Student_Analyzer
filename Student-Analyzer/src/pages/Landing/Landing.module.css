@@ -320,3 +320,9 @@ body {
     justify-content: center;
   }
 }
+/* Add this to your Landing.module.css file */
+
+.logo img {
+  height: 100px; /* You can adjust this value as needed */
+  width: auto;
+}
