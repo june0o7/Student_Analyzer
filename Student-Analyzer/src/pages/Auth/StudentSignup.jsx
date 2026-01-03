@@ -3,7 +3,7 @@ import { useNavigate, Link } from "react-router-dom";
 import styles from "./Auth.module.css";
 import studentData from "../icons_logos/lstudent.json";
 import Lottie from "lottie-react";
-import { auth, db, storage } from "../../Firebase_Config/firebaseConfig"; // adjust path if needed // adjust path if needed
+import { auth, db } from "../../Firebase_Config/firebaseConfig";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore";
 
@@ -36,7 +36,6 @@ const StudentSignup = () => {
     setError("");
 
     try {
-      // In a real app, you would send this data to your backend
       console.log("Student signup data:", formData);
       const userCredential = await createUserWithEmailAndPassword(
         auth,
@@ -44,10 +43,8 @@ const StudentSignup = () => {
         formData.password
       );
 
-      // 2. Get the user UID
       const userId = userCredential.user.uid;
 
-      // 3. Save additional user data to Firestore
       await setDoc(doc(db, "students", userId), {
         name: formData.name,
         email: formData.email,
@@ -57,15 +54,6 @@ const StudentSignup = () => {
       });
       navigate("/student-login");
 
-      // Simulate API call
-      // await new Promise(resolve => setTimeout(resolve, 1000));
-
-      // For demo purposes, we'll just check if fields are filled
-      // if (formData.name && formData.email && formData.password && formData.studentId && formData.confirmPassword && formData.password === formData.confirmPassword ) {
-      //   navigate('/student-dashboard');
-      // } else {
-      //   setError('Please fill in all required fields');
-      // }
     } catch (err) {
       setError("Registration failed. Please try again.");
     } finally {
@@ -75,6 +63,12 @@ const StudentSignup = () => {
 
   return (
     <div className={styles.authContainer}>
+      <div className={styles.backgroundShapes}>
+        <div className={styles.shape1}></div>
+        <div className={styles.shape2}></div>
+        <div className={styles.shape3}></div>
+      </div>
+
       <div className={styles.authCard}>
         <div className={styles.authLeft}>
           <Lottie
@@ -82,8 +76,8 @@ const StudentSignup = () => {
             loop={true}
             className={styles.authAnimation}
           />
-          <h2>Join Our Learning Community</h2>
-          <p>Start tracking your academic journey today</p>
+          <h2>Join the Network</h2>
+          <p>Start your data-driven academic journey</p>
         </div>
 
         <div className={styles.authRight}>
@@ -162,7 +156,7 @@ const StudentSignup = () => {
               className={styles.authButton}
               disabled={isLoading}
             >
-              {isLoading ? "Creating account..." : "Sign Up"}
+              {isLoading ? "Creating Account..." : "Sign Up"}
             </button>
 
             <div className={styles.authFooter}>

@@ -4,7 +4,7 @@ import styles from './Auth.module.css';
 import teacherData from '../icons_logos/teacher.json';
 import Lottie from 'lottie-react';
 import { signInWithEmailAndPassword } from "firebase/auth";
-import { auth, db, storage } from '../../Firebase_Config/firebaseConfig';// adjust path if needed
+import { auth, db } from '../../Firebase_Config/firebaseConfig';
 import { getDoc, doc } from "firebase/firestore";
 
 const TeacherLogin = () => {
@@ -20,7 +20,6 @@ const TeacherLogin = () => {
     setError('');
     
     try {
-      // In a real app, you would verify credentials against your backend
       console.log('Teacher login attempt:', { email, password });
        const userCredential = await signInWithEmailAndPassword(auth, email, password);
       
@@ -31,7 +30,7 @@ const TeacherLogin = () => {
     // 🔐 Check Firestore "teacher" collection
     const teacherDoc = await getDoc(doc(db, "teachers", userId));
     console.log("Teacher Document:", teacherDoc.exists());
-      // For demo purposes, we'll just check if fields are filled
+      
       if (teacherDoc.exists()) {
         navigate('/teacher-dashboard'); 
       } else {
@@ -46,11 +45,17 @@ const TeacherLogin = () => {
 
   return (
     <div className={styles.authContainer}>
+      <div className={styles.backgroundShapes}>
+        <div className={styles.shape1}></div>
+        <div className={styles.shape2}></div>
+        <div className={styles.shape3}></div>
+      </div>
+
       <div className={styles.authCard}>
         <div className={styles.authLeft}>
           <Lottie animationData={teacherData} loop={true} className={styles.authAnimation} />
-          <h2>Welcome Back, Educator!</h2>
-          <p>Access your classroom management tools</p>
+          <h2>Welcome, Educator!</h2>
+          <p>Access your advanced analytics dashboard</p>
         </div>
         
         <div className={styles.authRight}>
@@ -98,7 +103,7 @@ const TeacherLogin = () => {
               className={styles.authButton}
               disabled={isLoading}
             >
-              {isLoading ? 'Logging in...' : 'Login'}
+              {isLoading ? 'Accessing Dashboard...' : 'Login'}
             </button>
             
             <div className={styles.authFooter}>

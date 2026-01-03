@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react';
-import { FiArrowRight, FiUser, FiBook } from 'react-icons/fi';
+import { FiArrowRight, FiUser, FiBook, FiActivity, FiGlobe, FiAward } from 'react-icons/fi';
 import { useNavigate } from 'react-router-dom';
 import styles from './Landing.module.css';
-import student from '../icons_logos/lstudent.json';
-import teacher from '../icons_logos/teacher.json';
+import student from '../icons_logos/lstudent.json'; //
+import teacher from '../icons_logos/teacher.json'; //
 import Lottie from 'lottie-react';
-import sa_black from '../icons_logos/sa_black.png';
-import sa_white from '../icons_logos/sa_white.png';
+import sa_white from '../icons_logos/Sa_white.png'; //
+
 const Landing = () => {
   const [displayText, setDisplayText] = useState('');
   const [isDeleting, setIsDeleting] = useState(false);
@@ -14,36 +14,44 @@ const Landing = () => {
   const [typingIndex, setTypingIndex] = useState(0);
   const navigate = useNavigate();
 
-  const typingSpeed = 100;
-  const deletingSpeed = 50;
-  const pauseDuration = 1500;
+  const typingSpeed = 80;
+  const deletingSpeed = 40;
+  const pauseDuration = 2000;
 
+  // Updated phrases with Emojis
   const phrases = [
-    "Welcome to EduTrack",
-    "Student Analytics",
-    "Teacher Portal",
-    "Data-Driven Education",
-    "Explore the Universe"
+    "This is EduTrack",
+    "Analyze..........💭 ",
+    "Improve......💪 ",
+    "Excel..........🎉",
+    // "The Future is here🧑‍🎓" 
   ];
 
   useEffect(() => {
     const currentPhrase = phrases[loopNum % phrases.length];
+    
+    // FIX: Convert string to array to handle Emojis correctly as single characters
+    const characters = [...currentPhrase]; 
+    const fullLength = characters.length;
+
     let timer;
 
     if (isDeleting) {
       if (typingIndex > 0) {
         timer = setTimeout(() => {
-          setDisplayText(currentPhrase.substring(0, typingIndex - 1));
+          // Slice the array instead of the string
+          setDisplayText(characters.slice(0, typingIndex - 1).join(''));
           setTypingIndex(typingIndex - 1);
         }, deletingSpeed);
       } else {
         setIsDeleting(false);
         setLoopNum(loopNum + 1);
+        setTypingIndex(0); // Reset index for next phrase
       }
     } else {
-      if (typingIndex < currentPhrase.length) {
+      if (typingIndex < fullLength) {
         timer = setTimeout(() => {
-          setDisplayText(currentPhrase.substring(0, typingIndex + 1));
+          setDisplayText(characters.slice(0, typingIndex + 1).join(''));
           setTypingIndex(typingIndex + 1);
         }, typingSpeed);
       } else {
@@ -60,115 +68,125 @@ const Landing = () => {
 
   return (
     <div className={styles.container}>
+      {/* Animated Background Elements */}
+      <div className={styles.backgroundShapes}>
+        <div className={styles.shape1}></div>
+        <div className={styles.shape2}></div>
+        <div className={styles.shape3}></div>
+      </div>
+
       <div className={styles.content}>
-        {/* Welcome Section */}
+        {/* Left: Welcome & Hero */}
         <div className={styles.welcomeSection}>
+          <div className={styles.logoWrapper}>
+            {/* <img src={sa_white} alt="Student Analyzer Logo" className={styles.mainLogo} /> */}
+            <span className={styles.logoBadge}>BETA v2.0</span>
+          </div>
           
-<div className={styles.logo}>
- <img src={sa_white} alt="Student Analyzer Logo" />
-</div>
-          <h1 className={styles.typewriter}>
-            <span className={styles.typewriterText}>{displayText}</span>
-            <span className={styles.cursor}>|</span>
-          </h1>
-          <p className={styles.subtitle}>
-            Transform your educational experience with our comprehensive analytics platform.
-            Track performance, manage classes, and gain valuable insights.
-          </p>
-          <div className={styles.features}>
-            <div className={styles.featureItem}>
-              <div className={styles.featureIcon}>
-                <FiBook />
+          <div className={styles.heroContent}>
+            <h1 className={styles.typewriter}>
+              <span className={styles.gradientText}>{displayText}</span>
+              <span className={styles.cursor}></span>
+            </h1>
+            <p className={styles.subtitle}>
+              Dive into the universe of educational analytics. 
+              Visualize progress, predict outcomes, and master your academic journey with 
+              AI-powered insights.
+            </p>
+            
+            <div className={styles.statsRow}>
+              <div className={styles.statItem}>
+                <h3>10k+</h3>
+                <span>Students</span>
               </div>
-              <span>Real-time Analytics</span>
+              <div className={styles.divider}></div>
+              <div className={styles.statItem}>
+                <h3>98%</h3>
+                <span>Success Rate</span>
+              </div>
+              <div className={styles.divider}></div>
+              <div className={styles.statItem}>
+                <h3>24/7</h3>
+                <span>Analysis</span>
+              </div>
             </div>
-            <div className={styles.featureItem}>
-              <div className={styles.featureIcon}>
-                <FiUser />
+
+            <div className={styles.featuresGrid}>
+              <div className={styles.featureCard}>
+                <FiActivity className={styles.featureIcon} />
+                <span>Real-time Tracking</span>
               </div>
-              <span>Personalized Dashboards</span>
+              <div className={styles.featureCard}>
+                <FiGlobe className={styles.featureIcon} />
+                <span>Global Standards</span>
+              </div>
+              <div className={styles.featureCard}>
+                <FiAward className={styles.featureIcon} />
+                <span>Smart Goals</span>
+              </div>
             </div>
           </div>
         </div>
 
-        {/* Login Section */}
+        {/* Right: Login Portals */}
         <div className={styles.loginSection}>
-          <h2 className={styles.loginTitle}>Access Your Account</h2>
-
-          {/* Student Card */}
-          <div className={styles.loginCard}>
-            <div className={styles.cardContent}>
-              <div className={styles.cardLeft}>
-                <div className={styles.cardHeader}>
-                  <div className={styles.cardIcon} style={{ backgroundColor: 'rgba(67, 97, 238, 0.1)' }}>
-                    <FiUser color="#4361ee" />
+          <div className={styles.glassPanel}>
+            <h2 className={styles.loginTitle}>Choose Your Portal</h2>
+            
+            {/* Student Card */}
+            <div className={`${styles.loginCard} ${styles.studentTheme}`}>
+              <div className={styles.cardGlow}></div>
+              <div className={styles.cardContent}>
+                <div className={styles.cardText}>
+                  <div className={styles.cardHeader}>
+                    <div className={styles.iconCircle}>
+                      <FiUser />
+                    </div>
+                    <h3>Student Access</h3>
                   </div>
-                  <h3>Student Portal</h3>
+                  <p>View grades, attendance, and personalized analytics.</p>
+                  <div className={styles.actionButtons}>
+                    <button onClick={() => handleNavigation('/student-login')} className={styles.primaryBtn}>
+                      Login <FiArrowRight />
+                    </button>
+                    <button onClick={() => handleNavigation('/student-signup')} className={styles.secondaryBtn}>
+                      Join
+                    </button>
+                  </div>
                 </div>
-                <p>Track your performance, view grades, and monitor your progress</p>
-                <div className={styles.buttonGroup}>
-                  <button 
-                    className={styles.cardButton} 
-                    onClick={() => handleNavigation('/student-login')}
-                  >
-                    Login  
-                    <FiArrowRight className={styles.buttonIcon} />
-                  </button>
-                  <button 
-                    className={styles.cardButtonOutline} 
-                    onClick={() => handleNavigation('/student-signup')}
-                  >
-                    Signup
-                  </button>
+                <div className={styles.lottieWrapper}>
+                  <Lottie animationData={student} loop={true} />
                 </div>
-              </div>
-              <div className={styles.cardRight}>
-                <Lottie 
-                  animationData={student} 
-                  loop={true} 
-                  className={styles.lottieAnimation}
-                />
               </div>
             </div>
-          </div>
 
-          {/* Teacher Card */}
-          <div className={styles.loginCard}>
-            <div className={styles.cardContent}>
-              <div className={styles.cardLeft}>
-                <div className={styles.cardHeader}>
-                  <div className={styles.cardIcon} style={{ backgroundColor: 'rgba(76, 175, 80, 0.1)' }}>
-                    <FiBook color="#4CAF50" />
+            {/* Teacher Card */}
+            <div className={`${styles.loginCard} ${styles.teacherTheme}`}>
+              <div className={styles.cardGlow}></div>
+              <div className={styles.cardContent}>
+                <div className={styles.cardText}>
+                  <div className={styles.cardHeader}>
+                    <div className={styles.iconCircle}>
+                      <FiBook />
+                    </div>
+                    <h3>Teacher Access</h3>
                   </div>
-                  <h3>Teacher Portal</h3>
+                  <p>Manage classes, generate reports, and track performance.</p>
+                  <div className={styles.actionButtons}>
+                    <button onClick={() => handleNavigation('/teacher-login')} className={styles.primaryBtn}>
+                      Login <FiArrowRight />
+                    </button>
+                    <button onClick={() => handleNavigation('/teacher-signup')} className={styles.secondaryBtn}>
+                      Join
+                    </button>
+                  </div>
                 </div>
-                <p>Manage your classes, analyze student data, and create reports</p>
-                <div className={styles.buttonGroup}>
-                  <button 
-                    className={styles.cardButton} 
-                    onClick={() => handleNavigation('/teacher-login')}
-                    style={{ backgroundColor: '#4CAF50' }}
-                  >
-                    Login
-                    <FiArrowRight className={styles.buttonIcon} />
-                  </button>
-                  <button 
-                    className={styles.cardButtonOutline} 
-                    onClick={() => handleNavigation('/teacher-signup')}
-                    style={{ borderColor: '#4CAF50', color: '#4CAF50' }}
-                  >
-                    Signup
-                  </button>
+                <div className={styles.lottieWrapper}>
+                  <Lottie animationData={teacher} loop={true} />
                 </div>
-              </div>
-              <div className={styles.cardRight}>
-                <Lottie 
-                  animationData={teacher} 
-                  loop={true} 
-                  className={styles.lottieAnimation}
-                />
               </div>
             </div>
+
           </div>
         </div>
       </div>

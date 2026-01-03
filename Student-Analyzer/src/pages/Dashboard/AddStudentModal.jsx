@@ -1,137 +1,147 @@
 import { useState } from "react";
 import style from "./Dashboard.module.css";
-import { FiX } from "react-icons/fi";
-import {
-  collection,
-  getDocs,
-  updateDoc,
-  doc,
-  getDoc,
-} from "firebase/firestore";
+import { FiX, FiUserPlus, FiSearch, FiCheckCircle, FiAlertCircle } from "react-icons/fi";
+import { collection, getDocs, updateDoc, doc, getDoc } from "firebase/firestore";
 import { db } from "../../Firebase_Config/firebaseConfig";
 import { getAuth } from "firebase/auth";
 
 const AddStudentModal = ({ isOpen, onClose, onAddStudent }) => {
   const [studentId, setStudentId] = useState("");
-  const [isChecking, setIsChecking] = useState(false);
+  const [status, setStatus] = useState("idle"); // idle, checking, success, error
+  const [message, setMessage] = useState("");
+  
   const auth = getAuth();
   const user = auth.currentUser ? auth.currentUser.uid : null;
 
-  if (!isOpen) {
-    return null;
-  }
+  if (!isOpen) return null;
 
-  // Function to check if student ID exists in Firebase
-  const checkStudentIdExists = async (id) => {
-    try {
-      const querySnapshot = await getDocs(collection(db, "students"));
-      const students = querySnapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
+  const resetState = () => {
+    setStudentId("");
+    setStatus("idle");
+    setMessage("");
+  };
 
-      // Check if any student has the matching ID
-      return students.some((student) => student.studentId === id);
-    } catch (error) {
-      console.error("Error checking student ID:", error);
-      throw error;
-    }
+  const handleClose = () => {
+    resetState();
+    onClose();
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!studentId.trim()) return;
 
-    if (!studentId.trim()) {
-      alert("Please enter a student ID.");
-      return;
-    }
-
-    setIsChecking(true);
+    setStatus("checking");
+    setMessage("Searching for student...");
 
     try {
-      // Check if student ID already exists
+      // 1. Check if student exists
+      const querySnapshot = await getDocs(collection(db, "students"));
+      const students = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      const targetStudent = students.find(s => s.studentId === studentId);
 
-      const idExists = await checkStudentIdExists(studentId);
-
-      if (idExists) {
-        alert("Student ID already exists in the database.");
-
-        const docRef = doc(db, "teachers", user);
-        const docSnap = await getDoc(docRef);
-        console.log("Document data:", docSnap.data().sids);
-
-        try {
-          await updateDoc(doc(db, "teachers", user), {
-            sids: [...docSnap.data().sids, studentId],
-          });
-        } catch (error) {
-          console.error("Error updating document: ", error);
-
-          alert(
-            `Failed to link student ID (${studentId}) to teacher ID (${user}). Please try again.`
-          );
-
-          return;
-        }
-        setIsChecking(false);
-        onAddStudent(studentId);
-        setStudentId("");
-        onClose();
+      if (!targetStudent) {
+        setStatus("error");
+        setMessage("Student ID not found. Ask the student to register first.");
         return;
-      } else {
-        alert("Student ID is not available.");
-        onClose();
       }
 
-      onClose();
+      // 2. Link to Teacher
+      const docRef = doc(db, "teachers", user);
+      const docSnap = await getDoc(docRef);
+      
+      if (docSnap.exists()) {
+        const currentSids = docSnap.data().sids || [];
+        
+        if (currentSids.includes(studentId)) {
+          setStatus("error");
+          setMessage("This student is already in your class.");
+          return;
+        }
+
+        await updateDoc(docRef, {
+          sids: [...currentSids, studentId],
+        });
+
+        setStatus("success");
+        setMessage("Student added successfully!");
+        
+        // Delay closing to show success message
+        setTimeout(() => {
+          onAddStudent(studentId);
+          handleClose();
+        }, 1500);
+      }
     } catch (error) {
       console.error("Error:", error);
-      alert(
-        "An error occurred while checking the student ID. Please try again."
-      );
-    } finally {
-      setIsChecking(false);
+      setStatus("error");
+      setMessage("An error occurred. Please try again.");
     }
   };
 
   return (
-    <div className={style.modalBackdrop} onClick={onClose}>
-      <div className={style.modalContent} onClick={(e) => e.stopPropagation()}>
-        <div className={style.modalHeader}>
-          <h2>Add New Student</h2>
-          <button onClick={onClose} className={style.closeButton}>
-            <FiX size={24} />
+    <div className={style.modalBackdrop} onClick={handleClose}>
+      <div className={style.addStudentCard} onClick={(e) => e.stopPropagation()}>
+        
+        {/* Header */}
+        <div className={style.addStudentHeader}>
+          <div className={style.headerIcon}>
+            <FiUserPlus size={24} />
+          </div>
+          <div>
+            <h2>Add New Student</h2>
+            <p>Link a registered student to your dashboard</p>
+          </div>
+          <button onClick={handleClose} className={style.iconCloseBtn}>
+            <FiX size={20} />
           </button>
         </div>
-        <form onSubmit={handleSubmit} className={style.modalBody}>
-          <div className={style.formGroup}>
-            <label htmlFor="studentId">Student ID</label>
+
+        {/* Body */}
+        <form onSubmit={handleSubmit} className={style.addStudentBody}>
+          <div className={style.inputWrapper}>
+            <FiSearch className={style.inputIcon} />
             <input
               type="text"
-              id="studentId"
-              className={style.modalInput}
               value={studentId}
-              onChange={(e) => setStudentId(e.target.value)}
-              placeholder="Enter student's unique ID"
+              onChange={(e) => {
+                setStudentId(e.target.value);
+                if(status === 'error') setStatus('idle');
+              }}
+              placeholder="Enter Student ID (e.g., STU123)"
+              className={`${style.modernInput} ${status === 'error' ? style.inputError : ''}`}
               autoFocus
-              disabled={isChecking}
+              disabled={status === "checking" || status === "success"}
             />
           </div>
-          <div className={style.modalActions}>
+
+          {/* Status Messages */}
+          {status === "error" && (
+            <div className={style.statusMessageError}>
+              <FiAlertCircle /> {message}
+            </div>
+          )}
+          {status === "success" && (
+            <div className={style.statusMessageSuccess}>
+              <FiCheckCircle /> {message}
+            </div>
+          )}
+
+          {/* Footer Actions */}
+          <div className={style.addStudentFooter}>
             <button
               type="button"
-              className={style.btnOutline}
-              onClick={onClose}
-              disabled={isChecking}
+              className={style.cancelBtn}
+              onClick={handleClose}
+              disabled={status === "checking" || status === "success"}
             >
               Cancel
             </button>
             <button
               type="submit"
-              className={style.btnPrimary}
-              disabled={isChecking}
+              className={`${style.confirmBtn} ${status === "success" ? style.btnSuccess : ""}`}
+              disabled={status === "checking" || status === "success" || !studentId}
             >
-              {isChecking ? "Checking..." : "Add Student"}
+              {status === "checking" ? "Verifying..." : status === "success" ? "Added!" : "Add Student"}
             </button>
           </div>
         </form>

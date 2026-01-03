@@ -1,84 +1,169 @@
 /* Landing.module.css */
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap');
+
 :root {
-  --primary-blue: #4361ee;
-  --primary-green: #4CAF50;
-  --dark-text: #2c3e50;
-  --light-text: #7f8c8d;
-  --border-radius: 12px;
-  --box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-  --transition: all 0.3s ease;
-  --card-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+  --bg-dark: #0f172a;
+  --bg-card: rgba(30, 41, 59, 0.7);
+  --primary-glow: #6366f1;
+  --secondary-glow: #ec4899;
+  --accent-cyan: #06b6d4;
+  --text-main: #f8fafc;
+  --text-muted: #94a3b8;
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --border-radius: 20px;
+  --card-radius: 16px;
+  --transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 * {
-  margin: 0;
-  padding: 0;
   box-sizing: border-box;
 }
 
 body {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-  background-color: #f8f9fa;
-  color: var(--dark-text);
-  line-height: 1.6;
-  -webkit-font-smoothing: antialiased;
+  margin: 0;
+  font-family: 'Outfit', sans-serif;
+  background-color: var(--bg-dark);
+  color: var(--text-main);
+  overflow-x: hidden;
 }
 
 .container {
+  min-height: 100vh;
+  position: relative;
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 100vh;
   padding: 2rem;
-  background-color: #f8f9fa;
-}
-
-.content {
-  display: flex;
-  max-width: 1200px;
-  width: 100%;
-  background-color: #ffffff;
-  border-radius: var(--border-radius);
-  box-shadow: var(--box-shadow);
   overflow: hidden;
 }
 
-/* Welcome Section */
-.welcomeSection {
-  flex: 1;
-  padding: 4rem;
-  background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ed 100%);
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
+/* --- Animated Background Shapes --- */
+.backgroundShapes {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
 }
 
-.logo {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: var(--primary-blue);
-  margin-bottom: 2rem;
+.shape1, .shape2, .shape3 {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.4;
+  animation: float 10s infinite ease-in-out;
+}
+
+.shape1 {
+  width: 500px;
+  height: 500px;
+  background: var(--primary-glow);
+  top: -100px;
+  left: -100px;
+  animation-delay: 0s;
+}
+
+.shape2 {
+  width: 400px;
+  height: 400px;
+  background: var(--secondary-glow);
+  bottom: -50px;
+  right: -50px;
+  animation-delay: -2s;
+}
+
+.shape3 {
+  width: 300px;
+  height: 300px;
+  background: var(--accent-cyan);
+  top: 40%;
+  left: 40%;
+  animation-delay: -4s;
+}
+
+@keyframes float {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(30px, -50px) scale(1.1); }
+  66% { transform: translate(-20px, 20px) scale(0.9); }
+}
+
+/* --- Main Content Layout --- */
+.content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  width: 100%;
+  max-width: 1300px;
+  height: 85vh;
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--border-radius);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+}
+
+/* --- Left Section (Welcome) --- */
+.welcomeSection {
+  flex: 1.2;
+  padding: 4rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  border-right: 1px solid var(--glass-border);
+}
+
+.logoWrapper {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.mainLogo {
+  height: 60px;
+  width: auto;
+  filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.3));
+}
+
+.logoBadge {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  letter-spacing: 1px;
+  font-weight: 600;
+  color: var(--accent-cyan);
+  border: 1px solid rgba(6, 182, 212, 0.3);
+}
+
+.heroContent {
+  margin-top: 2rem;
 }
 
 .typewriter {
-  font-size: 2.5rem;
+  font-size: 3.5rem;
+  line-height: 1.1;
   font-weight: 700;
   margin-bottom: 1.5rem;
-  min-height: 3.5rem;
-  display: flex;
-  align-items: center;
+  min-height: 4rem;
 }
 
-.typewriterText {
-  background: linear-gradient(90deg, #4361ee, #4cc9f0);
+.gradientText {
+  background: linear-gradient(135deg, #fff 0%, #a5b4fc 100%);
   -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+  -webkit-text-fill-color: transparent;
 }
 
 .cursor {
-  margin-left: 4px;
+  display: inline-block;
+  width: 4px;
+  height: 1em;
+  background-color: var(--accent-cyan);
+  margin-left: 8px;
   animation: blink 1s infinite;
+  vertical-align: middle;
 }
 
 @keyframes blink {
@@ -88,241 +173,283 @@ body {
 
 .subtitle {
   font-size: 1.1rem;
-  color: var(--light-text);
-  margin-bottom: 2.5rem;
-  max-width: 90%;
+  color: var(--text-muted);
   line-height: 1.7;
+  max-width: 90%;
+  margin-bottom: 3rem;
 }
 
-.features {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-  margin-top: 2rem;
-}
-
-.featureItem {
+/* Stats Row */
+.statsRow {
   display: flex;
   align-items: center;
+  gap: 2rem;
+  margin-bottom: 3rem;
+  background: rgba(255, 255, 255, 0.03);
+  padding: 1.5rem;
+  border-radius: 12px;
+  border: 1px solid var(--glass-border);
+}
+
+.statItem h3 {
+  font-size: 1.8rem;
+  margin: 0;
+  background: linear-gradient(to right, var(--accent-cyan), var(--primary-glow));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-weight: 700;
+}
+
+.statItem span {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.divider {
+  width: 1px;
+  height: 40px;
+  background: var(--glass-border);
+}
+
+/* Features Grid */
+.featuresGrid {
+  display: flex;
   gap: 1rem;
 }
 
+.featureCard {
+  background: rgba(255, 255, 255, 0.05);
+  padding: 0.8rem 1.2rem;
+  border-radius: 30px;
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  font-size: 0.9rem;
+  color: var(--text-main);
+  border: 1px solid transparent;
+  transition: var(--transition);
+}
+
+.featureCard:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: var(--primary-glow);
+  transform: translateY(-3px);
+}
+
 .featureIcon {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background-color: rgba(67, 97, 238, 0.1);
+  color: var(--accent-cyan);
+}
+
+/* --- Right Section (Login) --- */
+.loginSection {
+  flex: 1;
+  padding: 2rem;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--primary-blue);
+  background: rgba(0, 0, 0, 0.2);
 }
 
-.featureItem span {
-  font-weight: 500;
-  font-size: 1rem;
-}
-
-/* Login Section */
-.loginSection {
-  flex: 1;
-  padding: 4rem;
+.glassPanel {
+  width: 100%;
+  max-width: 480px;
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  background-color: #ffffff;
-}
-
-.loginTitle {
-  font-size: 1.8rem;
-  font-weight: 600;
-  margin-bottom: 2.5rem;
-  color: var(--dark-text);
-  text-align: center;
-}
-
-.loginCard {
-  padding: 2rem;
-  border-radius: var(--border-radius);
-  background-color: #ffffff;
-  box-shadow: var(--card-shadow);
-  margin-bottom: 1.5rem;
-  transition: var(--transition);
-  border: 1px solid transparent;
-}
-
-.loginCard:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-  border-color: rgba(67, 97, 238, 0.2);
-}
-
-.cardContent {
-  display: flex;
   gap: 1.5rem;
 }
 
-.cardLeft {
-  flex: 1;
+.loginTitle {
+  font-size: 1.5rem;
+  text-align: center;
+  margin-bottom: 1rem;
+  font-weight: 300;
+  color: var(--text-muted);
 }
 
-.cardRight {
-  width: 150px;
+.loginCard {
+  position: relative;
+  background: var(--bg-card);
+  border-radius: var(--card-radius);
+  padding: 2rem;
+  overflow: hidden;
+  transition: var(--transition);
+  border: 1px solid var(--glass-border);
+  cursor: pointer;
+}
+
+.cardGlow {
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 60%);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.loginCard:hover {
+  transform: translateY(-5px) scale(1.02);
+}
+
+.loginCard:hover .cardGlow {
+  opacity: 1;
+}
+
+.studentTheme:hover {
+  border-color: var(--primary-glow);
+  box-shadow: 0 0 30px rgba(99, 102, 241, 0.2);
+}
+
+.teacherTheme:hover {
+  border-color: var(--secondary-glow);
+  box-shadow: 0 0 30px rgba(236, 72, 153, 0.2);
+}
+
+.cardContent {
+  position: relative;
+  z-index: 2;
   display: flex;
+  justify-content: space-between;
   align-items: center;
-  justify-content: center;
 }
 
-.lottieAnimation {
-  width: 100%;
-  height: auto;
-  max-height: 120px;
+.cardText {
+  flex: 1;
 }
 
 .cardHeader {
   display: flex;
   align-items: center;
   gap: 1rem;
-  margin-bottom: 1.5rem;
+  margin-bottom: 0.8rem;
 }
 
-.cardIcon {
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
+.iconCircle {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
+  font-size: 1.2rem;
+}
+
+.studentTheme .iconCircle {
+  background: rgba(99, 102, 241, 0.2);
+  color: #818cf8;
+}
+
+.teacherTheme .iconCircle {
+  background: rgba(236, 72, 153, 0.2);
+  color: #f472b6;
 }
 
 .loginCard h3 {
-  font-size: 1.3rem;
+  margin: 0;
+  font-size: 1.2rem;
   font-weight: 600;
-  color: var(--dark-text);
 }
 
 .loginCard p {
-  color: var(--light-text);
+  font-size: 0.9rem;
+  color: var(--text-muted);
   margin-bottom: 1.5rem;
-  font-size: 0.95rem;
-  line-height: 1.6;
+  line-height: 1.5;
 }
 
-.buttonGroup {
+.lottieWrapper {
+  width: 100px;
+  margin-left: 1rem;
+  opacity: 0.8;
+  transition: var(--transition);
+}
+
+.loginCard:hover .lottieWrapper {
+  opacity: 1;
+  transform: scale(1.1);
+}
+
+.actionButtons {
   display: flex;
-  gap: 1rem;
-  margin-top: 2rem;
+  gap: 0.8rem;
 }
 
-.cardButton {
-  display: inline-flex;
+.primaryBtn, .secondaryBtn {
+  padding: 0.6rem 1.2rem;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+  display: flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.8rem 1.5rem;
-  border-radius: var(--border-radius);
-  background-color: var(--primary-blue);
-  color: white;
-  font-weight: 500;
+  gap: 0.4rem;
+}
+
+.primaryBtn {
+  background: var(--text-main);
+  color: var(--bg-dark);
   border: none;
-  cursor: pointer;
-  transition: var(--transition);
-  font-size: 0.95rem;
-  box-shadow: 0 2px 8px rgba(67, 97, 238, 0.2);
 }
 
-.cardButtonOutline {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.8rem 1.5rem;
-  border-radius: var(--border-radius);
-  background-color: transparent;
-  color: var(--primary-blue);
-  font-weight: 500;
-  border: 1px solid var(--primary-blue);
-  cursor: pointer;
-  transition: var(--transition);
-  font-size: 0.95rem;
+.primaryBtn:hover {
+  background: var(--accent-cyan);
+  color: white;
 }
 
-.buttonIcon {
-  transition: var(--transition);
+.secondaryBtn {
+  background: transparent;
+  color: var(--text-main);
+  border: 1px solid var(--glass-border);
 }
 
-.cardButton:hover {
-  opacity: 0.9;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(67, 97, 238, 0.3);
+.secondaryBtn:hover {
+  border-color: var(--text-main);
 }
 
-.cardButton:hover .buttonIcon {
-  transform: translateX(3px);
-}
-
-.cardButtonOutline:hover {
-  background-color: rgba(67, 97, 238, 0.05);
-}
-
-/* Responsive Styles */
-@media (max-width: 992px) {
+/* --- Responsive Design --- */
+@media (max-width: 1200px) {
   .content {
     flex-direction: column;
+    height: auto;
+    overflow: visible;
   }
 
-  .welcomeSection, .loginSection {
-    padding: 3rem;
+  .welcomeSection {
+    border-right: none;
+    border-bottom: 1px solid var(--glass-border);
+    padding: 3rem 2rem;
   }
 
   .loginSection {
-    width: 100%;
+    padding: 3rem 2rem;
   }
 }
 
 @media (max-width: 768px) {
-  .cardContent {
-    flex-direction: column;
-  }
-
-  .cardRight {
-    width: 100%;
-    margin-top: 1rem;
-  }
-
-  .lottieAnimation {
-    max-height: 100px;
-  }
-}
-
-@media (max-width: 576px) {
-  .container {
-    padding: 1rem;
-  }
-
-  .welcomeSection, .loginSection {
-    padding: 2rem;
-  }
-
   .typewriter {
-    font-size: 2rem;
+    font-size: 2.5rem;
   }
-
-  .loginTitle {
-    font-size: 1.5rem;
-  }
-
-  .buttonGroup {
+  
+  .statsRow {
     flex-direction: column;
-    gap: 0.75rem;
+    align-items: flex-start;
+    gap: 1rem;
   }
-
-  .cardButton, .cardButtonOutline {
+  
+  .divider {
     width: 100%;
-    justify-content: center;
+    height: 1px;
   }
-}
-/* Add this to your Landing.module.css file */
-
-.logo img {
-  height: 100px; /* You can adjust this value as needed */
-  width: auto;
+  
+  .featuresGrid {
+    flex-wrap: wrap;
+  }
+  
+  .loginCard {
+    padding: 1.5rem;
+  }
 }
